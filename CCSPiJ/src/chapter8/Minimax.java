@@ -25,20 +25,16 @@ public class Minimax {
 		}
 		// Recursive case - maximize your gains or minimize the opponent's gains
 		if (maximizing) {
-			double bestEval = Double.NEGATIVE_INFINITY; // result must be higher
-			for (Move move : board.getLegalMoves()) {
-				double result = minimax(board.move(move), false, originalPlayer, maxDepth - 1);
-				bestEval = Math.max(result, bestEval);
-			}
-			return bestEval;
-		} else { // minimizing
-			double worstEval = Double.POSITIVE_INFINITY; // result must be lower
-			for (Move move : board.getLegalMoves()) {
-				double result = minimax(board.move(move), true, originalPlayer, maxDepth - 1);
-				worstEval = Math.min(result, worstEval);
-			}
-			return worstEval;
+			return board.getLegalMoves().stream()
+					.mapToDouble(move -> minimax(board.move(move), false, originalPlayer, maxDepth - 1))
+					.max()
+					.orElse(Double.NEGATIVE_INFINITY);
 		}
+		// minimizing
+		return board.getLegalMoves().stream()
+				.mapToDouble(move -> minimax(board.move(move), true, originalPlayer, maxDepth - 1))
+				.min()
+				.orElse(Double.POSITIVE_INFINITY);
 	}
 
 	// Find the best possible move in the current position
@@ -80,15 +76,14 @@ public class Minimax {
 				}
 			}
 			return alpha;
-		} else { // minimizing
-			for (Move m : board.getLegalMoves()) {
-				beta = Math.min(beta, alphabeta(board.move(m), true, originalPlayer, maxDepth - 1, alpha, beta));
-				if (beta <= alpha) { // check cutoff
-					break;
-				}
-			}
-			return beta;
 		}
-
+		// minimizing
+		for (Move m : board.getLegalMoves()) {
+			beta = Math.min(beta, alphabeta(board.move(m), true, originalPlayer, maxDepth - 1, alpha, beta));
+			if (beta <= alpha) { // check cutoff
+				break;
+			}
+		}
+		return beta;
 	}
 }

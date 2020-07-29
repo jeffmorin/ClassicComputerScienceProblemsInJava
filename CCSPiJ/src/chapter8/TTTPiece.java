@@ -17,30 +17,30 @@
 package chapter8;
 
 public enum TTTPiece implements Piece {
-	X, O, E; // E is Empty
+	X("X"),
+	O("O"),
+	E(" "); // E is Empty
+
+	static {
+		X.opposite = O;
+		O.opposite = X;
+		E.opposite = E;
+	}
+	private String code;
+	private TTTPiece opposite;
+
+	private TTTPiece(String c) {
+		code = c;
+	}
 
 	@Override
 	public TTTPiece opposite() {
-		if (this == TTTPiece.X) {
-			return TTTPiece.O;
-		} else if (this == TTTPiece.O) {
-			return TTTPiece.X;
-		} else {
-			return TTTPiece.E;
-		}
+		return opposite;
 	}
 
 	@Override
 	public String toString() {
-		switch (this) {
-		case X:
-			return "X";
-		case O:
-			return "O";
-		default: // E, empty
-			return " ";
-		}
-
+		return code;
 	}
 
 }

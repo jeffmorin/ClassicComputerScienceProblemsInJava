@@ -19,6 +19,8 @@ package chapter8;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class TTTBoard implements Board<Integer> {
 	private static final int NUM_SQUARES = 9;
@@ -52,57 +54,44 @@ public class TTTBoard implements Board<Integer> {
 
 	@Override
 	public List<Integer> getLegalMoves() {
-		ArrayList<Integer> legalMoves = new ArrayList<>();
-		for (int i = 0; i < NUM_SQUARES; i++) {
-			// empty squares are legal moves
-			if (position[i] == TTTPiece.E) {
-				legalMoves.add(i);
-			}
-		}
-		return legalMoves;
+		return IntStream.range(0, NUM_SQUARES)
+				// empty squares are legal moves
+				.filter(i -> position[i] == TTTPiece.E)
+				.mapToObj(Integer::valueOf)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public boolean isWin() {
 		// three row, three column, and then two diagonal checks
-		return position[0] == position[1] && position[0] == position[2] && position[0] != TTTPiece.E ||
-				position[3] == position[4] && position[3] == position[5] && position[3] != TTTPiece.E ||
-				position[6] == position[7] && position[6] == position[8] && position[6] != TTTPiece.E ||
-				position[0] == position[3] && position[0] == position[6] && position[0] != TTTPiece.E ||
-				position[1] == position[4] && position[1] == position[7] && position[1] != TTTPiece.E ||
-				position[2] == position[5] && position[2] == position[8] && position[2] != TTTPiece.E ||
-				position[0] == position[4] && position[0] == position[8] && position[0] != TTTPiece.E ||
-				position[2] == position[4] && position[2] == position[6] && position[2] != TTTPiece.E;
+		return checkPos(0, 1, 2) || checkPos(3, 4, 5) || checkPos(6, 7, 8)
+				|| checkPos(0, 3, 6) || checkPos(1, 4, 7) || checkPos(2, 5, 8)
+				|| checkPos(0, 4, 8) || checkPos(2, 4, 6);
+	}
+
+	private boolean checkPos(int p0, int p1, int p2) {
+		return position[p0] == position[p1] && position[p0] == position[p2]
+				&& position[p0] != TTTPiece.E;
 	}
 
 	@Override
 	public double evaluate(Piece player) {
 		if (isWin() && turn == player) {
 			return -1;
-		} else if (isWin() && turn != player) {
-			return 1;
-		} else {
-			return 0.0;
 		}
+		if (isWin() && turn != player) {
+			return 1;
+		}
+		return 0.0;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (int row = 0; row < 3; row++) {
-			for (int col = 0; col < 3; col++) {
-				sb.append(position[row * 3 + col].toString());
-				if (col != 2) {
-					sb.append("|");
-				}
-			}
-			sb.append(System.lineSeparator());
-			if (row != 2) {
-				sb.append("-----");
-				sb.append(System.lineSeparator());
-			}
-		}
-		return sb.toString();
+		return IntStream.range(0, 3)
+				.mapToObj(row -> IntStream.range(0, 3)
+						.mapToObj(col -> position[row * 3 + col].toString())
+						.collect(Collectors.joining("|", "", "\n"))
+				).collect(Collectors.joining("-----\n"));
 	}
 
 }

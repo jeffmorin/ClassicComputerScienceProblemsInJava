@@ -19,6 +19,8 @@ package chapter8;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class C4Board implements Board<Integer> {
 	public static final int NUM_COLUMNS = 7;
@@ -93,12 +95,10 @@ public class C4Board implements Board<Integer> {
 		this.position = position;
 		columnCount = new int[NUM_COLUMNS];
 		for (int c = 0; c < NUM_COLUMNS; c++) {
-			int piecesInColumn = 0;
-			for (int r = 0; r < NUM_ROWS; r++) {
-				if (position[c][r] != C4Piece.E) {
-					piecesInColumn++;
-				}
-			}
+			int col = c;
+			int piecesInColumn = (int) IntStream.range(0, NUM_ROWS)
+					.filter(r -> position[col][r] != C4Piece.E)
+					.count();
 			columnCount[c] = piecesInColumn;
 		}
 
@@ -122,23 +122,16 @@ public class C4Board implements Board<Integer> {
 
 	@Override
 	public List<Integer> getLegalMoves() {
-		List<Integer> legalMoves = new ArrayList<>();
-		for (int i = 0; i < NUM_COLUMNS; i++) {
-			if (columnCount[i] < NUM_ROWS) {
-				legalMoves.add(i);
-			}
-		}
-		return legalMoves;
+		return IntStream.range(0, NUM_COLUMNS)
+				.filter(i -> columnCount[i] < NUM_ROWS)
+				.mapToObj(Integer::valueOf)
+				.collect(Collectors.toList());
 	}
 
 	private int countSegment(C4Location[] segment, C4Piece color) {
-		int count = 0;
-		for (C4Location location : segment) {
-			if (position[location.column][location.row] == color) {
-				count++;
-			}
-		}
-		return count;
+		return (int) Arrays.stream(segment)
+				.filter(location -> position[location.column][location.row] == color)
+				.count();
 	}
 
 	@Override
@@ -177,25 +170,19 @@ public class C4Board implements Board<Integer> {
 
 	@Override
 	public double evaluate(Piece player) {
-		double total = 0.0;
-		for (C4Location[] segment : SEGMENTS) {
-			total += evaluateSegment(segment, player);
-		}
-		return total;
+		return SEGMENTS.stream()
+				.mapToDouble(segment -> evaluateSegment(segment, player))
+				.sum();
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (int r = NUM_ROWS - 1; r >= 0; r--) {
-			sb.append("|");
-			for (int c = 0; c < NUM_COLUMNS; c++) {
-				sb.append(position[c][r].toString());
-				sb.append("|");
-			}
-			sb.append(System.lineSeparator());
-		}
-		return sb.toString();
+		return IntStream.range(0, NUM_ROWS)
+				.map(r -> NUM_ROWS - 1 - r)
+				.mapToObj(r -> IntStream.range(0, NUM_COLUMNS)
+						.mapToObj(c -> position[c][r].toString())
+						.collect(Collectors.joining("|", "|", "|"))
+				).collect(Collectors.joining("\n"));
 	}
 
 }

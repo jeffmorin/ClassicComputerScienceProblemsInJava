@@ -19,6 +19,7 @@ package chapter8;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Method;
+import java.util.Objects;
 
 // Annotation for unit tests
 @Retention(RetentionPolicy.RUNTIME)
@@ -30,7 +31,7 @@ public class TTTMinimaxTests {
 
 	// Check if two values are equal and report back
 	public static <T> void assertEquality(T actual, T expected) {
-		if (actual.equals(expected)) {
+		if (Objects.equals(actual, expected)) {
 			System.out.println("Passed!");
 		} else {
 			System.out.println("Failed!");

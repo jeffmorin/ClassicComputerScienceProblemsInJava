@@ -41,7 +41,8 @@ public class ConnectFour {
 			if (board.isWin()) {
 				System.out.println("Human wins!");
 				break;
-			} else if (board.isDraw()) {
+			}
+			if (board.isDraw()) {
 				System.out.println("Draw!");
 				break;
 			}
@@ -52,7 +53,8 @@ public class ConnectFour {
 			if (board.isWin()) {
 				System.out.println("Computer wins!");
 				break;
-			} else if (board.isDraw()) {
+			}
+			if (board.isDraw()) {
 				System.out.println("Draw!");
 				break;
 			}
