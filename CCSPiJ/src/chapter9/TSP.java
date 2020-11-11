@@ -18,10 +18,18 @@ package chapter9;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class TSP {
+	private static final String RUTLAND = "Rutland";
+	private static final String BURLINGTON = "Burlington";
+	private static final String WHITE_RIVER_JUNCTION = "White River Junction";
+	private static final String BENNINGTON = "Bennington";
+	private static final String BRATTLEBORO = "Brattleboro";
+
 	private final Map<String, Map<String, Integer>> distances;
 
 	public TSP(Map<String, Map<String, Integer>> distances) {
@@ -87,37 +95,31 @@ public class TSP {
 		return shortestPath;
 	}
 
+	private static void addDistance(Map<String, Map<String, Integer>> vtDistances,
+			String city1, String city2, int distance) {
+		vtDistances.get(city1).put(city2, distance);
+		vtDistances.get(city2).put(city1, distance);
+	}
+
 	public static void main(String[] args) {
-		Map<String, Map<String, Integer>> vtDistances = Map.of(
-				"Rutland", Map.of(
-						"Burlington", 67,
-						"White River Junction", 46,
-						"Bennington", 55,
-						"Brattleboro", 75),
-				"Burlington", Map.of(
-						"Rutland", 67,
-						"White River Junction", 91,
-						"Bennington", 122,
-						"Brattleboro", 153),
-				"White River Junction", Map.of(
-						"Rutland", 46,
-						"Burlington", 91,
-						"Bennington", 98,
-						"Brattleboro", 65),
-				"Bennington", Map.of(
-						"Rutland", 55,
-						"Burlington", 122,
-						"White River Junction", 98,
-						"Brattleboro", 40),
-				"Brattleboro", Map.of(
-						"Rutland", 75,
-						"Burlington", 153,
-						"White River Junction", 65,
-						"Bennington", 40));
+		Map<String, Map<String, Integer>> vtDistances = new HashMap<>();
+		Stream.of(RUTLAND, BURLINGTON, WHITE_RIVER_JUNCTION, BENNINGTON, BRATTLEBORO)
+				.forEach(city -> vtDistances.put(city, new HashMap<>()));
+		addDistance(vtDistances, RUTLAND, BURLINGTON, 67);
+		addDistance(vtDistances, RUTLAND, WHITE_RIVER_JUNCTION, 46);
+		addDistance(vtDistances, RUTLAND, BENNINGTON, 55);
+		addDistance(vtDistances, RUTLAND, BRATTLEBORO, 75);
+		addDistance(vtDistances, BURLINGTON, WHITE_RIVER_JUNCTION, 91);
+		addDistance(vtDistances, BURLINGTON, BENNINGTON, 122);
+		addDistance(vtDistances, BURLINGTON, BRATTLEBORO, 153);
+		addDistance(vtDistances, WHITE_RIVER_JUNCTION, BENNINGTON, 98);
+		addDistance(vtDistances, WHITE_RIVER_JUNCTION, BRATTLEBORO, 65);
+		addDistance(vtDistances, BENNINGTON, BRATTLEBORO, 40);
+
 		TSP tsp = new TSP(vtDistances);
 		String[] shortestPath = tsp.findShortestPath();
 		int distance = tsp.pathDistance(shortestPath);
-		System.out.println("The shortest path is " + Arrays.toString(shortestPath) + " in " +
-				distance + " miles.");
+		System.out.printf("The shortest path is %s in %d miles.%n",
+				Arrays.toString(shortestPath), distance);
 	}
 }

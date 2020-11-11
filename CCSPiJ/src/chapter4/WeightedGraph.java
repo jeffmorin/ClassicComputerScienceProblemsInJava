@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.function.IntConsumer;
 
-public class WeightedGraph<V> extends Graph<V, WeightedEdge> {
+public class WeightedGraph<V> extends Graph<V, WeightedEdge> implements Cities {
 
 	public WeightedGraph(List<V> vertices) {
 		super(vertices);
@@ -199,36 +199,11 @@ public class WeightedGraph<V> extends Graph<V, WeightedEdge> {
 	// Test basic Graph construction
 	public static void main(String[] args) {
 		// Represents the 15 largest MSAs in the United States
-		WeightedGraph<String> cityGraph2 = new WeightedGraph<>(
-				List.of("Seattle", "San Francisco", "Los Angeles", "Riverside", "Phoenix", "Chicago", "Boston",
-						"New York", "Atlanta", "Miami", "Dallas", "Houston", "Detroit", "Philadelphia", "Washington"));
+		WeightedGraph<String> cityGraph2 = new WeightedGraph<>(CITIES);
 
-		cityGraph2.addEdge("Seattle", "Chicago", 1737);
-		cityGraph2.addEdge("Seattle", "San Francisco", 678);
-		cityGraph2.addEdge("San Francisco", "Riverside", 386);
-		cityGraph2.addEdge("San Francisco", "Los Angeles", 348);
-		cityGraph2.addEdge("Los Angeles", "Riverside", 50);
-		cityGraph2.addEdge("Los Angeles", "Phoenix", 357);
-		cityGraph2.addEdge("Riverside", "Phoenix", 307);
-		cityGraph2.addEdge("Riverside", "Chicago", 1704);
-		cityGraph2.addEdge("Phoenix", "Dallas", 887);
-		cityGraph2.addEdge("Phoenix", "Houston", 1015);
-		cityGraph2.addEdge("Dallas", "Chicago", 805);
-		cityGraph2.addEdge("Dallas", "Atlanta", 721);
-		cityGraph2.addEdge("Dallas", "Houston", 225);
-		cityGraph2.addEdge("Houston", "Atlanta", 702);
-		cityGraph2.addEdge("Houston", "Miami", 968);
-		cityGraph2.addEdge("Atlanta", "Chicago", 588);
-		cityGraph2.addEdge("Atlanta", "Washington", 543);
-		cityGraph2.addEdge("Atlanta", "Miami", 604);
-		cityGraph2.addEdge("Miami", "Washington", 923);
-		cityGraph2.addEdge("Chicago", "Detroit", 238);
-		cityGraph2.addEdge("Detroit", "Boston", 613);
-		cityGraph2.addEdge("Detroit", "Washington", 396);
-		cityGraph2.addEdge("Detroit", "New York", 482);
-		cityGraph2.addEdge("Boston", "New York", 190);
-		cityGraph2.addEdge("New York", "Philadelphia", 81);
-		cityGraph2.addEdge("Philadelphia", "Washington", 123);
+		for (Route route : ROUTES) {
+			cityGraph2.addEdge(route.city1, route.city2, route.distance);
+		}
 
 		System.out.println(cityGraph2);
 
@@ -237,7 +212,7 @@ public class WeightedGraph<V> extends Graph<V, WeightedEdge> {
 
 		System.out.println(); // spacing
 
-		DijkstraResult dijkstraResult = cityGraph2.dijkstra("Los Angeles");
+		DijkstraResult dijkstraResult = cityGraph2.dijkstra(LOS_ANGELES);
 		Map<String, Double> nameDistance = cityGraph2.distanceArrayToDistanceMap(dijkstraResult.distances);
 		System.out.println("Distances from Los Angeles:");
 		nameDistance.forEach((name, distance) -> System.out.println(name + " : " + distance));
@@ -245,7 +220,7 @@ public class WeightedGraph<V> extends Graph<V, WeightedEdge> {
 		System.out.println(); // spacing
 
 		System.out.println("Shortest path from Los Angeles to Boston:");
-		List<WeightedEdge> path = pathMapToPath(cityGraph2.indexOf("Los Angeles"), cityGraph2.indexOf("Boston"),
+		List<WeightedEdge> path = pathMapToPath(cityGraph2.indexOf(LOS_ANGELES), cityGraph2.indexOf(BOSTON),
 				dijkstraResult.pathMap);
 		cityGraph2.printWeightedPath(path);
 	}

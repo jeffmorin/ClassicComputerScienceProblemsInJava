@@ -17,31 +17,31 @@
 package chapter8;
 
 public enum C4Piece implements Piece {
-	B, R, E; // E is Empty
+	B("B"),
+	R("R"),
+	E(" "); // E is Empty
+
+	private String code;
+	private C4Piece opposite;
+
+	static {
+		B.opposite = R;
+		R.opposite = B;
+		E.opposite = E;
+	}
+
+	private C4Piece(String c) {
+		code = c;
+	}
 
 	@Override
 	public C4Piece opposite() {
-		switch (this) {
-		case B:
-			return C4Piece.R;
-		case R:
-			return C4Piece.B;
-		default: // E, empty
-			return C4Piece.E;
-		}
+		return opposite;
 	}
 
 	@Override
 	public String toString() {
-		switch (this) {
-		case B:
-			return "B";
-		case R:
-			return "R";
-		default: // E, empty
-			return " ";
-		}
-
+		return code;
 	}
 
 }

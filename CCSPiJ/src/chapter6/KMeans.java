@@ -85,7 +85,7 @@ public class KMeans<Point extends DataPoint> {
 		for (int dimension = 0; dimension < points.get(0).numDimensions; dimension++) {
 			List<Double> values = dimensionSlice(dimension);
 			Statistics stats = new Statistics(values);
-			Double randValue = random.doubles(stats.min(), stats.max()).findFirst().getAsDouble();
+			Double randValue = stats.min() + random.nextDouble() * (stats.max() - stats.min());
 			randDimensions.add(randValue);
 		}
 		return new DataPoint(randDimensions);
